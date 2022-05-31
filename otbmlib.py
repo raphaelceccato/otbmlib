@@ -58,15 +58,15 @@ class Map:
         fileName = os.path.splitext(os.path.basename(path))[0] #base file name without extension
 
         file = open(path, "wb+")
-        mapa_bytes = bytearray()
+        map_bytes = bytearray()
         file.write(b"\x00\x00\x00\x00")
         file.write(NODE_OPEN)
         file.write(OTBM_HEADER)
-        file.write(mapa.version)
-        file.write(mapa.sizeX.to_bytes(2, byteorder="little"))
-        file.write(mapa.sizeY.to_bytes(2, byteorder="little"))
-        file.write(mapa.itemsMajorVersion)
-        file.write(mapa.itemsMinorVersion)
+        file.write(map.version)
+        file.write(map.sizeX.to_bytes(2, byteorder="little"))
+        file.write(map.sizeY.to_bytes(2, byteorder="little"))
+        file.write(map.itemsMajorVersion)
+        file.write(map.itemsMinorVersion)
         file.write(NODE_OPEN)
         file.write(OTBM_MAPDATA)
         file.write(b"\x01")
@@ -78,7 +78,7 @@ class Map:
         file.write(OTBM_ATTR_EXT_HOUSE_FILE)
         file.write(stringToBytes(fileName + "-house.xml"))
 
-        for area in mapa.mapData.areas.values():
+        for area in map.mapData.areas.values():
             file.write(NODE_OPEN)
             file.write(OTBM_TILEAREA)
             file.write(area.x.to_bytes(2, byteorder="little"))
