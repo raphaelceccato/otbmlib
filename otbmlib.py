@@ -62,11 +62,11 @@ class Map:
         file.write(b"\x00\x00\x00\x00")
         file.write(NODE_OPEN)
         file.write(OTBM_HEADER)
-        file.write(map.version)
-        file.write(map.sizeX.to_bytes(2, byteorder="little"))
-        file.write(map.sizeY.to_bytes(2, byteorder="little"))
-        file.write(map.itemsMajorVersion)
-        file.write(map.itemsMinorVersion)
+        file.write(self.version)
+        file.write(self.sizeX.to_bytes(2, byteorder="little"))
+        file.write(self.sizeY.to_bytes(2, byteorder="little"))
+        file.write(self.itemsMajorVersion)
+        file.write(self.itemsMinorVersion)
         file.write(NODE_OPEN)
         file.write(OTBM_MAPDATA)
         file.write(b"\x01")
@@ -78,7 +78,7 @@ class Map:
         file.write(OTBM_ATTR_EXT_HOUSE_FILE)
         file.write(stringToBytes(fileName + "-house.xml"))
 
-        for area in map.mapData.areas.values():
+        for area in self.mapData.areas.values():
             file.write(NODE_OPEN)
             file.write(OTBM_TILEAREA)
             file.write(area.x.to_bytes(2, byteorder="little"))
@@ -118,8 +118,8 @@ class OTBMMapData:
         return
 
     def getArea(self, x, y, z): #x and y are absolute tile coordinates
-        ax = math.floor(x / 256) * 256
-        ay = math.floor(y / 256) * 256
+        ax = math.floor(x / AREA_SIZE) * AREA_SIZE
+        ay = math.floor(y / AREA_SIZE) * AREA_SIZE
         if self.areas.get((ax,ay,z)) == None:
             tileArea = OTBMTileArea()
             tileArea.x = ax
@@ -140,16 +140,14 @@ class OTBMTileArea: #a chunk of the map, contains tiles
 
     def getTile(self, rx, ry): #rx and ry are relative tile coordinates (between 0 and 255 inclusive)
         if self.tiles.get((rx, ry)) == None:
-            tile = OTBMTile()
-            tile.x = rx
-            tile.y = ry
+            tile = OTBMTile(rx, ry)
             self.tiles[(rx,ry)] = tile
         return self.tiles[(rx,ry)]
 
 
 
 class OTBMTile:
-    def __init__(self, x = 0, y = 0):
+    def __init__(self, x = 0, y = 0): #x and y are relative tile coordinates (between 0 and 255 inclusive)
         self.x = x #1 byte
         self.y = y #1 byte
         self.properties = []
@@ -157,18 +155,16 @@ class OTBMTile:
         return
 
     def addItem(self, id, count = 0):
-        item = OTBMItem()
-        item.id = id
-        item.count = count
+        item = OTBMItem(id, count)
         self.items.append(item)
         return
 
 
 
 class OTBMItem:
-    def __init__(self):
-        self.id = 414 #2 bytes
-        self.count = 0
+    def __init__(self, id = 414, count = 0):
+        self.id = id #2 bytes
+        self.count = count
         self.properties = []
         return
 
@@ -187,8 +183,8 @@ def stringToBytes(txt):
 #----------------------debug----------------------#
 
 
-#if __name__ == "__main__":
-    #map = Map()
-    #tile = map.getTile(5, 5, 7)
-    #tile.addItem(4526)
-    #map.save("testotbmlib.otbm")
+if __name__ == "__main__":
+    map = Map()
+    tile = map.getTile(5, 5, 7)
+    tile.addItem(4526)
+    map.save("testotbmlib.otbm")
