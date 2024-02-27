@@ -1,4 +1,4 @@
-# otbmlib version 0.2 (made by kanu)
+# otbmlib version 0.2 (made by Raphael Ceccato Pauli a.k.a kanu)
 # based on:
 # https://otland.net/threads/a-comphrensive-description-of-the-otbm-format.258583/
 LIB_VERSION = "0.2"
